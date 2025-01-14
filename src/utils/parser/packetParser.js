@@ -9,6 +9,7 @@ export const packetParser = (data) => {
 
   // 공통 패킷 구조를 디코딩
   const Packet = protoMessages.common.Packet;
+  console.log(Packet);
   let packet;
   try {
     packet = Packet.decode(data);
