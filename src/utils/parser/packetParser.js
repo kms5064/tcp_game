@@ -8,7 +8,7 @@ export const packetParser = (data) => {
   const protoMessages = getProtoMessages();
 
   // 공통 패킷 구조를 디코딩
-  const Packet = protoMessages.common.Packet;
+  const Packet = protoMessages.common.CommonPacket;
   let packet;
   try {
     packet = Packet.decode(data);
@@ -18,8 +18,7 @@ export const packetParser = (data) => {
 
   const handlerId = packet.handlerId;
   const userId = packet.userId;
-  const clientVersion = packet.clientVersion;
-  const sequence = packet.sequence;
+  const clientVersion = packet.version;
 
   // clientVersion 검증
   if (clientVersion !== config.client.version) {
@@ -34,10 +33,10 @@ export const packetParser = (data) => {
   if (!protoTypeName) {
     throw new CustomError(ErrorCodes.UNKNOWN_HANDLER_ID, `알 수 없는 핸들러 ID: ${handlerId}`);
   }
-
   const [namespace, typeName] = protoTypeName.split('.');
   const PayloadType = protoMessages[namespace][typeName];
   let payload;
+  
   try {
     payload = PayloadType.decode(packet.payload);
   } catch (error) {
@@ -64,5 +63,5 @@ export const packetParser = (data) => {
     );
   }
 
-  return { handlerId, userId, payload, sequence };
+  return { handlerId, userId, payload };
 };
