@@ -13,7 +13,7 @@ export const onData = (socket) => async (data) => {
   socket.buffer = Buffer.concat([socket.buffer, data]);
 
   // 패킷의 총 헤더 길이 (패킷 길이 정보 + 타입 정보)
-  const totalHeaderLength = config.packet.totalLength + config.packet.typeLength;
+  const totalHeaderLength = config.packet.totalLength + config.packet.typeLength; //5
 
   // 버퍼에 최소한 전체 헤더가 있을 때만 패킷을 처리
   while (socket.buffer.length >= totalHeaderLength) {
@@ -23,10 +23,13 @@ export const onData = (socket) => async (data) => {
     // 2. 패킷 타입 정보 수신 (1바이트)
     const packetType = socket.buffer.readUInt8(config.packet.totalLength);
     // 3. 패킷 전체 길이 확인 후 데이터 수신
-    if (socket.buffer.length >= length) {
+    if (socket.buffer.length >= length) { //아직 버퍼에 데이터가 다 도착하지 않았다면,
       // 패킷 데이터를 자르고 버퍼에서 제거
-      const packet = socket.buffer.slice(totalHeaderLength, length);
-      socket.buffer = socket.buffer.slice(length);
+      const packet = socket.buffer.slice(totalHeaderLength, length); //헤더빼고 패킷에 데이터 넣기
+      socket.buffer = socket.buffer.slice(length); // 혹시 다음 요청에서 쓰일 패킷이 딸려들어왔을 수도 있으니까 나머지 패킷은 다시 버퍼에 넣기 => 13번째줄에 넣기
+
+      console.log(`length: ${length}, packetTYpe: ${packetType}`);
+      console.log(`packet: ${packet}`);
 
       try {
         switch (packetType) {
