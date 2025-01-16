@@ -9,20 +9,20 @@ import { getGameSession } from '../../session/game.session.js';
 const initialHandler = async ({ socket, userId, payload }) => {
   try {
     //payload에 deviceId, playerId, latency들어있음
-    const { deviceId, playerId, latency } = payload;
+    const { deviceId, playerId, latency, x = 0, y = 0 } = payload;
 
     const session = getGameSession('qwer');
 
     let user = await findUserByDeviceID(deviceId);
 
     if (!user) {
-      user = await createUser(deviceId);
+      user = await createUser(deviceId, x, y);
     } else {
-      await updateUserLogin(user.id);
+      await updateUserLogin(user.id, user.x, user.y);
     }
     
     //강제로 만든 addGameSession('qwer');에 유저 정보 넣기
-    user = addUser(userId, socket);
+    user = addUser(userId, socket, user.x, user.y);
     user.playerId = playerId;
     user.latency = latency;
     //이건뭐지?
@@ -35,7 +35,7 @@ const initialHandler = async ({ socket, userId, payload }) => {
     const initialResponse = createResponse(
       HANDLER_IDS.INITIAL,
       RESPONSE_SUCCESS_CODE,
-      { userId: user.id },
+      { userId: user.id, x: user.x, y: user.y },
       deviceId,
     );
     // console.log(initialResponse)
