@@ -1,11 +1,11 @@
 import { createPingPacket } from '../../utils/notification/game.notification.js';
 
 class User {
-  constructor(id, socket) {
+  constructor(id, socket, x, y) {
     this.id = id;
     this.socket = socket;
-    this.x = 0;
-    this.y = 0;
+    this.x = x;
+    this.y = y;
     this.sequence = 0;
     this.lastUpdateTime = Date.now();
   }
@@ -41,8 +41,8 @@ class User {
 
     // x, y 축에서 이동한 거리 계산
     return {
-      x: this.x + distance,
-      y: this.y,
+      x: this.x,
+      y: this.y
     };
   }
 }

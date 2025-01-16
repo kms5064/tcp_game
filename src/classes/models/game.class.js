@@ -4,7 +4,7 @@ import {
   gameStartNotification,
 } from '../../utils/notification/game.notification.js';
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 5;
 
 class Game {
   constructor(id) {
@@ -59,13 +59,16 @@ class Game {
     });
   }
 
-  getAllLocation() {
+  getAllLocation(userId) {
     const maxLatency = this.getMaxLatency();
 
-    const locationData = this.users.map((user) => {
+    const locationData = this.users
+    .filter((user) => user.id !== userId)
+    .map((user) => {
       const { x, y } = user.calculatePosition(maxLatency);
-      return { id: user.id, x, y };
+      return { id: user.id, playerId: user.playerId, x, y };
     });
+    
     return createLocationPacket(locationData);
   }
 }
